@@ -52,6 +52,7 @@ def backpack_01_2(goods, c):
     return dp[-1]
 
 
+# 完全背包问题
 # 有 N 种物品和一个容量是 V 的背包，每种物品都有无限件可用。
 # 第 i 种物品的体积是 vi，价值是 wi。
 # 求解将哪些物品装入背包，可使这些物品的总体积不超过背包容量，且总价值最大。
@@ -76,6 +77,24 @@ def backpack_complete_2(goods, c):
     return dp[-1]
 
 
+# dp[i][v] = max(dp[i-1][v] , dp[i][v-vi] + pi)
+# 与01背包不同点在于dp[i][v-vi] + pi是i而不是i-1，这表示不取第i件商品的最大价值与取一件第i件商品后，在前i件商品中的最大价值，这意味着可以
+# 重复取第i件商品， 所以两者的最大值就是在前i件商品中装入容量v的背包中的最大价值
+def backpack_complete_3(goods, c):
+    n = len(goods)
+    dp = [0 for _ in range(c + 1)]
+    for i in range(1, n + 1):
+        # 这里是升序，因为需要的是dp[i][v-vi] + pi
+        for j in range(goods[i - 1][1], c + 1):
+            # max中的dp[j]是第i-1次循环中计算得出的，dp[j-vi]+p[i]是第i次循环计算得出的
+            dp[j] = max(dp[j], dp[j - goods[i - 1][1]] + goods[i - 1][0])
+    return dp[-1]
+
+
+print(backpack_complete_3(goods, 19))
+
+
+# 多重背包问题
 # 有 N 种物品和一个容量是 V 的背包。
 # 第 i 种物品最多有 si 件，每件体积是 vi，价值是 wi。
 # 求解将哪些物品装入背包，可使物品体积总和不超过背包容量，且价值总和最大。
@@ -89,7 +108,5 @@ def backpack_multi(goods, c):
             kmin = min(j // goods[i - 1][1], goods[i - 1][2])
             for k in range(0, kmin + 1):
                 dp[j] = max(dp[j], dp[j - k * goods[i - 1][1]] + k * goods[i - 1][0])
+
     return dp[-1]
-
-
-print(backpack_multi(goods, 18))
