@@ -47,7 +47,7 @@ def backpack_01_2(goods, c):
     n = len(goods)
     dp = [0 for _ in range(c + 1)]
     for i in range(1, n + 1):
-        for j in range(c, 0, -1):
+        for j in range(c, goods[i - 1][1] - 1, -1):
             dp[j] = max(dp[j], dp[j - goods[i - 1][1]] + goods[i - 1][0])
     return dp[-1]
 
@@ -91,7 +91,7 @@ def backpack_complete_3(goods, c):
     return dp[-1]
 
 
-print(backpack_complete_3(goods, 19))
+# print(backpack_complete_3(goods, 19))
 
 
 # 多重背包问题
@@ -110,3 +110,29 @@ def backpack_multi(goods, c):
                 dp[j] = max(dp[j], dp[j - k * goods[i - 1][1]] + k * goods[i - 1][0])
 
     return dp[-1]
+
+
+# 多重背包问题可以转化为01背包问题
+# 将重复k个的商品分割为1，2，2^2, ...,2^m(2^m<k), k-前面之和 个商品（math.floor(math.log(k,2))+1 个）
+# 因为选与不选这些商品可以组合成0~k个商品这k+1种情况，这是因为整数都可以由二进制表示，例如二进制 1 10 100可以组合成0~7
+def backpack_multi_2(goods, c):
+    g = []
+    for i in goods:
+        j = 1
+        s = i[2]
+        while j < i[2]:
+            g.append([j * i[0], j * i[1]])
+            s -= j
+            j *= 2
+        if s > 0:
+            g.append([s * i[0], s * i[1]])
+    n = len(g)
+    dp = [0 for _ in range(c + 1)]
+    for i in range(1, n + 1):
+        for j in range(c, g[i - 1][1] - 1, -1):
+            dp[j] = max(dp[j], dp[j - g[i - 1][1]] + g[i - 1][0])
+    return dp[-1]
+
+
+print(backpack_multi(goods, 22))
+print(backpack_multi_2(goods, 22))
